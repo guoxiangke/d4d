@@ -9,6 +9,6 @@
 # sudo chmod +x /usr/local/bin/docker-compose
 
 #build & start  drupal !!!
-composeFile= $1
-projectName= "d4d_${composeFile}"
+composeFile=$1
+projectName="d4d_${composeFile}"
 docker-compose -p "${projectName} " -f "docker-compose-${composeFile}.yml " up -d 
