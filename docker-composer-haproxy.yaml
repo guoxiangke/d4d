@@ -1,4 +1,5 @@
-web:
+#docker4drupal  with haproxy d4d
+weba:
     image: drupal:latest
     hostname: webhost
     restart: always
@@ -7,7 +8,46 @@ web:
     links:
         - "db:mysql"
     ports:
+        - "80"
+#############
+webb:
+    image: drupal:latest
+    # hostname: webhost
+    restart: always
+    volumes_from:
+        - storage-drupal
+    links:
+        - "db:mysql"
+    ports:
+        - "80"
+#############
+webc:
+    image: drupal:latest
+    # hostname: webhost
+    restart: always
+    volumes_from:
+        - storage-drupal
+    links:
+        - "db:mysql"
+    ports:
+        - "80"
+#############
+haproxy:
+    image: haproxy:latest
+    restart: always
+    volumes:
+        - ./haproxy:/haproxy-override
+        - ./haproxy/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
+    links:
+        - weba
+        - webb
+        - webc
+    ports:
         - "80:80"
+        - "70:70"
+    expose:
+        - "80"
+        - "70"
 #################
 db:
     image: mysql
