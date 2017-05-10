@@ -22,7 +22,7 @@ then
 		if [ -f $compose_yml ]
 		then
 			docker-compose -p ${projectName}  -f ${compose_yml} up -d 
-			echo "Sucess: execute blow cmd\r\n"
+			echo "If not build plz execute blow cmd\r\n"
 			echo "sudo docker-compose -p ${projectName}  -f ${compose_yml}  up -d "
 		else
 			echo "Error: No ${compose_yml} !"

@@ -18,18 +18,26 @@ $ ./d4d.sh multi  #build with haproxy
 
 简单构建图：
 
-```seq
-Title: Compose service Struture of d4d
-Drupal iamge-->WebStorage:  (Build with && with CMD [])
-Drupal iamge-->WebSerice: Build with
-WebStorage->WebSerice: --volumes-from
-```
-```seq
-Mysql iamge-->DBStorage:  -v (only expose volumes)
-Mysql iamge-->DBSerice: Build
-DBStorage->DBSerice: --volumes-from
+![简单构建图](https://raw.githubusercontent.com/guoxiangke/d4d/master/struture.png)
+```graphLR
+    A{drupal:latest} -->|volumes && empty CMD| B[WebStorage:storage-drupal]
+    A -->|Build | C(WebService:web)
+    B -->| --volumes-from| C(WebService:web)
+    
+    D{mysql:latest} -->|volumes && empty CMD| E[DBStorage:storage-mysql]
+    D -->|Build | F(DBService:db)
+    E -->| --volumes-from| F(DBService:db)
+    
+    F -->|--link|C(WebService:web)
 ```
 
-```seq
-DBSerice->WebSerice: --link
-```
+
+
+Drupal config:
+	Database name :  drupal
+	Database username :  drupal 
+	Database password : drupal
+	Database Host : dbhost
+	Database Host Port : 3306
+
+
