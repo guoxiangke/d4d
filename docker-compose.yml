@@ -1,0 +1,37 @@
+web:
+    image: drupal:latest
+    hostname: webhost
+   restart: always
+    volumes_from:
+        - storage-drupal
+    links:
+        - "db:mysql"
+    ports:
+        - "80:80"
+#################
+db:
+    image: mysql
+    hostname: dbhost
+   restart: always
+    volumes_from:
+        - storage-mysql
+    environment:
+        - MYSQL_USER=drupal
+        - MYSQL_PASSWORD=drupal
+        - MYSQL_DATABASE=drupal
+        - MYSQL_ROOT_PASSWORD=drupal
+#################
+storage-drupal:
+    # image:  drupal:latest
+    build: ./storage/drupal-8
+    #image: guoxiangke:drupal-8-code-only
+    volumes:
+        - /var/www/html/profiles
+        - /var/www/html/modules
+        - /var/www/html/themes
+        - /var/www/html/sites/default
+#################
+storage-mysql:
+    build: ./storage/mysql
+    volumes:
+        - /var/lib/mysql
