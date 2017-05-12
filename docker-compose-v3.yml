@@ -1,0 +1,62 @@
+#copy of docker-compser.yml
+web:
+    image: drupal:latest
+    # hostname: webhost
+    container_name: apache
+    restart: always
+    volumes_from:
+        - storage-drupal
+        - storage-drupal-dev #storage-drupal-custom-code
+    links:
+        - "db:mysql"
+    ports:
+        - "80"
+#################
+db:
+    image: mysql
+    container_name: db_mysql
+    hostname: dbhost
+    restart: always
+    volumes_from:
+        - storage-mysql
+    environment:
+        - MYSQL_USER=drupal
+        - MYSQL_PASSWORD=drupal
+        - MYSQL_DATABASE=drupal
+        - MYSQL_ROOT_PASSWORD=drupal
+
+
+
+###################################################
+# update frequestly , when commit code to git  need rebuild it
+###################################################
+storage-drupal-dev: #storage-drupal-custom-code
+    # image:  drupal:latest
+    build: ./storage/drupal-8-devcode
+    #image: guoxiangke:drupal-8-code-only
+    volumes:
+        - /var/www/html/profiles
+        - /var/www/html/modules
+        - /var/www/html/themes
+        # TODO: Some common subdirectories include "contrib" for
+        # contributed modules, and "custom" for custom modules.
+        # - /var/www/html/modules/custom
+        # - /var/www/html/themes/custom
+
+###################################################
+# build once ,never updated! include all files of drupal && ori settings
+###################################################
+storage-drupal:
+    # image:  drupal:latest
+    build: ./storage/drupal-8
+    #image: guoxiangke:drupal-8-code-only
+    volumes:
+        - /var/www/html/sites/default
+
+###################################################
+# build once ,never updated! include all mysql data
+###################################################
+storage-mysql:
+    build: ./storage/mysql
+    volumes:
+        - /var/lib/mysql
