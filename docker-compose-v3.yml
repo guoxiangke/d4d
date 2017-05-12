@@ -1,68 +1,92 @@
-version: '2'
+version: "3"
+
 services:
+
   web:
+    image: drupal:latest
+    # container_name: apache 
+    restart: always
+    volumes:
+     - drupal-data:/var/www/html/sites/default
+     - drupal-profiles:/var/www/html/profiles
+     - drupal-modules:/var/www/html/modules
+     - drupal-themes:/var/www/html/themes
+    #volumes_from: ＃v2
+      # - storage-drupal #include all upload files of drupal && ori settings
+      # - storage-drupal-custom-code
+    ports:
+      - "80:80"
+    links:
+      - "db" #Link to containers in another service. (SERVICE:ALIAS), 
     depends_on:
-       - db
-      image: drupal:latest
-      # hostname: webhost
-      container_name: apache #Specify a custom container name, rather than a generated default name.
-      restart: always
-      volumes_from:
-          - storage-drupal #include all upload files of drupal && ori settings
-          - storage-dcc #storage-drupal-custom-code
-      links:
-          - "db" #Link to containers in another service. (SERVICE:ALIAS), 
-      ports:
-          - "80"
-  #################
+      - db
+    # networks:
+    #   - v3app
+
+
   db:
-      image: mysql
-      container_name: mysql
-      hostname: dbhost
-      restart: always
-      volumes_from:
-          - storage-mysql
-      environment:
-          - MYSQL_USER=drupal
-          - MYSQL_PASSWORD=drupal
-          - MYSQL_DATABASE=drupal
-          - MYSQL_ROOT_PASSWORD=drupal
-
-
+    image: mysql:latest
+    container_name: mysql #Specify a custom container name, rather than a generated default name.
+    hostname: dbhost
+    restart: always
+    # volumes_from:
+    #   - storage-mysql
+    volumes:
+     - db-data:/var/lib/mysql
+    # networks:
+    #   - v3app
+    environment:
+      - MYSQL_USER=drupal
+      - MYSQL_PASSWORD=drupal
+      - MYSQL_DATABASE=drupal
+      - MYSQL_ROOT_PASSWORD=drupal
 
   ###################################################
   # update frequestly , when commit code to git  need rebuild it
   ###################################################
-  storage-dcc:  ＃storage-drupal-custom-code
-      # image:  drupal:latest
-      build: ./storage/drupal-8-devcode
-      image: storage-drupal-custom-code #给build镜像后的image命名
-      container_name: drupal-custom-code
-      volumes:
-          - /var/www/html/profiles
-          - /var/www/html/modules
-          - /var/www/html/themes
-          # TODO: Some common subdirectories include "contrib" for
-          # contributed modules, and "custom" for custom modules.
-          # - /var/www/html/modules/custom
-          # - /var/www/html/themes/custom
+  storage-drupal-custom-code:
+    build: ./storage/drupal-8-devcode
+    image: storage-drupal-custom-code #给build镜像后的image命名
+    container_name: storage-drupal-custom-code
+    volumes:
+      - drupal-profiles:/var/www/html/profiles
+      - drupal-modules:/var/www/html/modules
+      - drupal-themes:/var/www/html/themes
+      # TODO: Some common subdirectories include "contrib" for
+      # contributed modules, and "custom" for custom modules.
+      # - /var/www/html/modules/custom
+      # - /var/www/html/themes/custom
+    # networks:
+    #   - v3app
 
   ###################################################
   # build once ,never updated! include all upload files of drupal && ori settings
   ###################################################
-  storage-drupal:
-      build: ./storage/drupal-8
-      # image: storage-drupal #给build镜像后的image命名 永不更新的image，不需要命名
-      container_name: drupal-storage
-      volumes:
-          - /var/www/html/sites/default
+  storage-drupal:  #storage-drupal-custom-code
+    build: ./storage/drupal-8
+    image: storage-drupal #给build镜像后的image命名 永不更新的image，不需要命名
+    container_name: storage-drupal
+    volumes:
+        - drupal-data:/var/www/html/sites/default
+    # networks:
+    #   - v3app
 
   ###################################################
   # build once ,never updated! include all mysql data
   ###################################################
   storage-mysql:
-      build: ./storage/mysql
-      # image: storage-mysql #给build镜像后的image命名 永不更新的image，不需要命名
-      container_name: mysql-storage
-      volumes:
-          - /var/lib/mysql
+    build: ./storage/mysql
+    image: storage-mysql #给build镜像后的image命名 永不更新的image，不需要命名
+    container_name: storage-mysql
+    volumes:
+        - db-data:/var/lib/mysql
+
+# networks:
+#     v3app:
+
+volumes:
+  db-data:
+  drupal-data:
+  drupal-modules:
+  drupal-themes:
+  drupal-profiles:
