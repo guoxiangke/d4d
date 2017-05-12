@@ -9,7 +9,7 @@ web:
     links:
         - "db:mysql"
     ports:
-        - "80:80"
+        - "80"
 #################
 db:
     image: mysql
