@@ -1,7 +1,7 @@
 #!  /bin/bash 
 #author : dale.tel@139.com
 # require: docker-compose installed
-trap 'echo “before execute line:$LINENO, composeFile=$composeFile,projectName”=$projectName,compose_yml=$compose_yml”' DEBUG
+# trap 'echo “before execute line:$LINENO, composeFile=$composeFile,projectName”=$projectName,compose_yml=$compose_yml”' DEBUG
 
 file="/usr/local/bin/docker-compose"
 if [ -f $file ]
@@ -15,7 +15,6 @@ then
 		if [ -f $compose_yml ]
 		then
 			docker-compose -p ${projectName}  -f ${compose_yml} up -d 
-			echo "If not build plz execute blow cmd\r\n"
 			# --force-rm 删除构建过程中的临时容器。
 			# --no-cache 构建镜像过程中不使用 cache（这将加长构建过程）。
 			# --pull 始终尝试通过 pull 来获取更新版本的镜像。
