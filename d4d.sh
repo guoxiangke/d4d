@@ -10,15 +10,8 @@ then
 	composeFile=$1
 	if [ composeFile ] 
 	then
-		if [ $composeFile = "simple" ] 
-		then
-			projectName="d4d_${composeFile}"
-			compose_yml="./docker-compose-${composeFile}.yml"
-			# compose_yml="./docker-compose-simple.yml"
-		else
-			projectName="d4d_haproxy"
-			compose_yml="./docker-compose-haproxy.yml"
-		fi
+		projectName="d4d_${composeFile}"
+		compose_yml="./docker-compose-${composeFile}.yml"
 		if [ -f $compose_yml ]
 		then
 			docker-compose -p ${projectName}  -f ${compose_yml} up -d 
